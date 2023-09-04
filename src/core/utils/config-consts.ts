@@ -1,0 +1,4 @@
+export const ConfigConsts = {
+  ACCESS_TOKEN_EXPIRE: 'ACCESS_TOKEN_EXPIRE',
+  JWT_SECRET: 'JWT_SECRET',
+};
