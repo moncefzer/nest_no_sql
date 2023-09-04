@@ -15,11 +15,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // @Get()
-  // findAll() {
-  //   return this.userService.findAll();
-  // }
-
   @Get()
   index(
     @Query('page', ParseIntPipe) page = 1,
