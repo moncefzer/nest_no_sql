@@ -3,7 +3,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
@@ -19,11 +18,12 @@ export class UserService {
     private readonly userModel: Model<User>,
   ) {}
 
-  async create(user: CreateUserDto): Promise<User> {
+  async create(user: User): Promise<User> {
     try {
       const createdUser = await this.userModel.create(user);
-      delete createdUser.password;
-      return createdUser;
+      const { password, ...userExceptPass } = createdUser.toObject();
+
+      return userExceptPass;
     } catch (err) {
       if (err.code === 11000)
         throw new BadRequestException('Email already used');
@@ -60,10 +60,7 @@ export class UserService {
     return `User ${id} Deleted Succ`;
   }
 
-  findByMail(email: string, selectPass?: boolean): Promise<User> {
-    return this.userModel.findOne(
-      { email },
-      { password: selectPass, email: true, _id: true },
-    );
+  findByMail(email: string, selectPass = false): Promise<User> {
+    return this.userModel.findOne({ email }, { password: selectPass });
   }
 }

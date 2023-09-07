@@ -110,4 +110,10 @@ describe('User Test suite', () => {
       }
     });
   });
+
+  describe('findByMail', async () => {
+    // Arrange
+    // Act
+    // Assert
+  });
 });

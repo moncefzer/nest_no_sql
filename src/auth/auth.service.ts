@@ -1,10 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { LoginUserDto } from 'src/user/dto/login-user.dto';
 import { UserService } from 'src/user/user.service';
 import * as bycrypt from 'bcrypt';
 import { User } from 'src/user/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
+import { TokenPayload } from 'src/core/interfaces/token-payload';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +20,7 @@ export class AuthService {
 
   async signup(createUserDto: CreateUserDto) {
     const userExist = await this.userService.findByMail(createUserDto.email);
+
     if (userExist) throw new BadRequestException('Email already used');
 
     const hashedPassword = await this.hashPassword(createUserDto.password);
@@ -30,7 +36,6 @@ export class AuthService {
   }
 
   async login(loginUserDto: LoginUserDto) {
-    // find user by email
     const user = await this.userService.findByMail(loginUserDto.email, true);
 
     if (!user) throw new BadRequestException('Email not found');
@@ -67,6 +72,14 @@ export class AuthService {
       sub: user._id.toString(),
       email: user.email,
     });
+  }
+
+  async verifyJWT(access_token: string): Promise<TokenPayload> {
+    try {
+      return this.jwtService.verify(access_token);
+    } catch (err) {
+      throw new UnauthorizedException('User not authorized');
+    }
   }
 }
 

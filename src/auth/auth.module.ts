@@ -25,5 +25,6 @@ import { ConfigConsts } from 'src/core/utils/config-consts';
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}
