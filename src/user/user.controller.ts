@@ -6,7 +6,6 @@ import {
   Param,
   Delete,
   Query,
-  ParseIntPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -16,10 +15,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  index(
-    @Query('page', ParseIntPipe) page = 1,
-    @Query('limit', ParseIntPipe) limit = 20,
-  ) {
+  index(@Query('page') page = 1, @Query('limit') limit = 20) {
     return this.userService.paginate({ page, limit: limit > 20 ? 20 : limit });
   }
 

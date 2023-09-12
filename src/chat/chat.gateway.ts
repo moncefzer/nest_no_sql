@@ -16,7 +16,7 @@ import { OnModuleInit } from '@nestjs/common';
 import { JoinedRoomService } from './services/joined-room.service';
 import { CreateMessageDto, CreateRoomDto, JoinRoomDto } from './dto';
 
-@WebSocketGateway(81, {})
+@WebSocketGateway()
 export class ChatGateway
   implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit
 {
