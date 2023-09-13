@@ -9,14 +9,20 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Routes } from 'src/core/utils/constants';
 
-@Controller('users')
+@Controller(Routes.USERS)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  index(@Query('page') page = 1, @Query('limit') limit = 20) {
-    return this.userService.paginate({ page, limit: limit > 20 ? 20 : limit });
+  async index(@Query('page') page = 1, @Query('limit') limit = 20) {
+    const result = await this.userService.paginate({
+      page,
+      limit: limit > 20 ? 20 : limit,
+    });
+
+    return result;
   }
 
   @Get(':id')
