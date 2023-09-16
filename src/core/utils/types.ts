@@ -1,5 +1,6 @@
 import { UpdateMessageDto } from 'src/messages/dto/update-message.dto';
 import { User } from 'src/user/entities/user.entity';
+import { ObjectId, Document, PopulatedDoc } from 'mongoose';
 
 export type EditMessageParams = {
   user: User;
@@ -12,3 +13,10 @@ export type CreateMessageParams = {
   conversationId: string;
   content: string;
 };
+export type DeleteMessageParams = {
+  userId: string;
+  conversationId: string;
+  messageId: string;
+};
+
+export type Populated<T> = PopulatedDoc<Document<ObjectId> & T>;

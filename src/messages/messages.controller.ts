@@ -17,6 +17,7 @@ import { UpdateMessageDto } from './dto/update-message.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Routes, ServerEvents } from 'src/core/utils/constants';
 import { JwtGuard } from 'src/auth/guard/jwt.guard';
+import { DeleteMessageParams } from 'src/core/utils/types';
 
 @Controller(Routes.MESSAGES)
 @UseGuards(JwtGuard)
@@ -57,10 +58,14 @@ export class MessagesController {
     @Param('id') conversationId: string,
     @Param('messageId') messageId: string,
   ) {
-    const params = { userId: user._id, conversationId, messageId };
+    const params: DeleteMessageParams = {
+      userId: user._id.toJSON(),
+      conversationId,
+      messageId,
+    };
     // TODO: check if user is the owner of the message
-    await this.messageService.delete(messageId);
-    this.events.emit('message.delete', params);
+    await this.messageService.delete(params);
+    this.events.emit(ServerEvents.MESSAGE_DELETE, params);
     return { conversationId, messageId };
   }
 
@@ -73,7 +78,7 @@ export class MessagesController {
   ) {
     const params = { user, messageId, updatemessageDto };
     const message = await this.messageService.update(params);
-    this.events.emit('message.update', message);
+    this.events.emit(ServerEvents.MESSAGE_UPDATE, message);
     return message;
   }
 }

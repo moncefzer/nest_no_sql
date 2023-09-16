@@ -18,6 +18,7 @@ export enum SocketEvents {
   ON_CONVERSATION_LEAVE = 'onConversationLeave',
   ON_CONVERSATION_CREATE = 'onConversationCreate',
   ON_MESSAGE_CREATE = 'onMessageCreate',
+  ON_MESSAGE_DELETE = 'onMessageDelete',
 }
 
 export enum ServerEvents {

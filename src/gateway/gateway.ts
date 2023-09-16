@@ -16,6 +16,7 @@ import { User } from 'src/user/entities/user.entity';
 import { OnEvent } from '@nestjs/event-emitter';
 import { Conversation } from 'src/conversation/entities/conversation.entity';
 import { Message } from 'src/messages/entities/message.entity';
+import { DeleteMessageParams } from 'src/core/utils/types';
 
 @WebSocketGateway()
 export class Gateway
@@ -36,10 +37,9 @@ export class Gateway
   @WebSocketServer()
   server: Server;
 
-  async handleConnection(socket: Socket, ...args: any[]) {
+  async handleConnection(socket: Socket) {
     try {
-      // get user identity and make auth
-      console.log(`client ${socket.id} connected`);
+      // auth user
       //? will  throw 401 if not authorized
       const decodedToken = await this.authService.verifyJWT(
         socket.handshake.headers.authorization,
@@ -52,20 +52,18 @@ export class Gateway
         socketId: socket.id,
         user: user,
       });
+
+      console.log(`${user.username} connected | ${socket.id} `);
     } catch (err) {
       console.log(err);
-      this.disconnect(socket, err.message);
+      this.handleDisconnect(socket, err.message);
     }
   }
 
-  async handleDisconnect(socket: Socket) {
-    console.log(`client ${socket.id} disconnected`);
+  async handleDisconnect(socket: Socket, message?: string) {
+    console.log(`${socket.data.user.username} disconnected | ${socket.id} `);
+    message && socket.emit('error', message);
     await this.connectedUserService.deleteBySocketId(socket.id);
-    socket.disconnect();
-  }
-
-  disconnect(socket: Socket, message?: string) {
-    socket.emit('error', message);
     socket.disconnect();
   }
 
@@ -78,6 +76,7 @@ export class Gateway
       socketId: socket.id,
       user,
     });
+
     socket.join(`conversation-${payload.conversationId}`);
   }
 
@@ -91,7 +90,7 @@ export class Gateway
   async handleConversationCreateEvent(conversation: Conversation) {
     for (const participant of conversation.participants) {
       const connection = await this.connectedUserService.findByUser(
-        participant as User,
+        participant._id.toString(),
       );
       connection &&
         this.server
@@ -109,12 +108,31 @@ export class Gateway
 
     for (const participant of conversation.participants) {
       const connection = await this.connectedUserService.findByUser(
-        participant as User,
+        participant._id.toString(),
       );
       connection &&
         this.server
           .to(connection.socketId)
           .emit(SocketEvents.ON_MESSAGE_CREATE, message);
+    }
+  }
+
+  @OnEvent(ServerEvents.MESSAGE_DELETE)
+  async handleMessageDeleteEvent(payload: DeleteMessageParams) {
+    console.log(payload);
+
+    const usersInJoiningConvers =
+      await this.joinedConversationService.findByConversation(
+        payload.conversationId,
+      );
+    for (const participant of usersInJoiningConvers) {
+      const connection = await this.connectedUserService.findByUser(
+        participant.user as string,
+      );
+      connection &&
+        this.server
+          .to(connection.socketId)
+          .emit(SocketEvents.ON_MESSAGE_DELETE, payload);
     }
   }
 }

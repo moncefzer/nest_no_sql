@@ -8,13 +8,13 @@ export class Message {
   _id?: string;
 
   @Prop({ required: true, type: Types.ObjectId, ref: Conversation.name })
-  conversation: Conversation | string;
+  conversation: Conversation;
 
   @Prop({ required: true })
   content: string;
 
   @Prop({ required: true, type: Types.ObjectId, ref: User.name })
-  sender: User | string;
+  sender: User;
 
   @Prop()
   createdAt: Date;

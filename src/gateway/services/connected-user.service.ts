@@ -1,11 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { IPaginationOptions } from 'src/core/interfaces/ipagination.option';
 import { Pagination } from 'src/core/interfaces/pagination';
 import { paginateModel } from 'src/core/utils/pagination-utils';
 import { UpdatePostDto } from 'src/post/dto/update-post.dto';
-import { User } from 'src/user/entities/user.entity';
 import { ConnectedUser } from '../entities/connected-user.entity';
 import { ConnectedUserDto } from '../dto/connected-user.dto';
 
@@ -42,9 +41,9 @@ export class ConnectedUserService {
     }
   }
 
-  async findByUser(user: User) {
+  async findByUser(userId: string) {
     const connection = await this.connectedUserModel.findOne({
-      user: user._id,
+      user: userId,
     });
     return connection;
   }

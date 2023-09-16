@@ -26,12 +26,14 @@ export class ConversationService {
     return await this.findOneById(conversation._id.toString());
   }
 
-  findConversationForUser(user: User) {
-    const conversations = this.conversationModel
+  async findConversationForUser(user: User) {
+    const conversations = await this.conversationModel
       .find({
         participants: { $in: [user._id.toString()] },
       })
       .populate('participants');
+
+    conversations[0].participants;
     return conversations;
   }
 
@@ -52,6 +54,7 @@ export class ConversationService {
       const room = await this.conversationModel
         .findById(id)
         .populate('participants');
+
       if (!room) throw new ConversationNotFoundException();
       return room;
     } catch (err) {

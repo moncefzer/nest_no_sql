@@ -15,7 +15,10 @@ import { GatewayModule } from './gateway/gateway.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    MongooseModule.forRoot(process.env.MONGO_URL, { dbName: 'instagram' }),
+    MongooseModule.forRoot(process.env.MONGO_URL, {
+      dbName: 'instagram',
+      connectTimeoutMS: 3000,
+    }),
     EventEmitterModule.forRoot(),
     UserModule,
     AuthModule,

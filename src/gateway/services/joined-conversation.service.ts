@@ -26,8 +26,10 @@ export class JoinedConversationService {
     return this.joinedRoomModel.find({ user });
   }
 
-  async findByRoom(roomId: string): Promise<JoinedConversation[]> {
-    return this.joinedRoomModel.find({ room: roomId });
+  async findByConversation(
+    conversationId: string,
+  ): Promise<JoinedConversation[]> {
+    return this.joinedRoomModel.find({ conversation: conversationId });
   }
 
   async deletebySocketId(socketId: string) {

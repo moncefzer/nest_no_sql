@@ -10,7 +10,7 @@ export class ConnectedUser {
   socketId: string;
 
   @Prop({ type: Types.ObjectId, ref: User.name })
-  user: User | string;
+  user: User;
 }
 
 export const ConnectedUserSchema = SchemaFactory.createForClass(ConnectedUser);

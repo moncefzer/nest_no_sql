@@ -7,7 +7,11 @@ import { paginateModel } from 'src/core/utils/pagination-utils';
 import { Message } from './entities/message.entity';
 import { MessageNotFoundException } from './exceptions/message-not-found.exception';
 import { CannotEditMessageException } from './exceptions/cannot-edit-message.exception';
-import { CreateMessageParams, EditMessageParams } from 'src/core/utils/types';
+import {
+  CreateMessageParams,
+  DeleteMessageParams,
+  EditMessageParams,
+} from 'src/core/utils/types';
 import { ConversationService } from 'src/conversation/conversation.service';
 
 @Injectable()
@@ -29,11 +33,12 @@ export class MessagesService {
     });
 
     //todo : update lastSendMessage in the conversation
-    const conversation = await this.conversatonsService.findOneById(
-      createdmessage.conversation as string,
-    );
+    // const conversation = await this.conversatonsService.findOneById(
+    //   createdmessage.conversation,
+    // );
 
-    return { message: createdmessage, conversation };
+    // return { message: createdmessage, conversation };
+    return { message: createdmessage };
   }
 
   async paginateMessagesForRoom(
@@ -80,8 +85,15 @@ export class MessagesService {
     if (!message) throw new CannotEditMessageException();
   }
 
-  async delete(id: string) {
-    const foundmessage = await this.findOne(id);
-    return foundmessage.deleteOne();
+  async delete(params: DeleteMessageParams) {
+    //todo : check if user is the owner of the message
+    //todo : when impl lastSendMessage in the conversation update it
+    const conversation = await this.conversatonsService.findOneById(
+      params.conversationId,
+    );
+
+    //? check if message exists
+    const foundMessage = await this.findOne(params.messageId);
+    return foundMessage.deleteOne();
   }
 }
