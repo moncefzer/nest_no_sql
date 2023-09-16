@@ -1,17 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import { Types, Document } from 'mongoose';
 import { Conversation } from 'src/conversation/entities/conversation.entity';
+import { Populated } from 'src/core/utils/types';
 import { User } from 'src/user/entities/user.entity';
 
 @Schema()
-export class JoinedConversation {
-  _Id?: Types.ObjectId;
-
+export class JoinedConversation extends Document {
   @Prop({ type: Types.ObjectId, ref: User.name })
-  user: User | string;
+  user: Populated<User>;
 
   @Prop({ type: Types.ObjectId, ref: Conversation.name })
-  conversation: Conversation | string;
+  conversation: Populated<Conversation>;
 
   @Prop()
   socketId: string;

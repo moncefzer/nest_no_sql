@@ -1,7 +1,6 @@
 import { IPaginationOptions } from '../interfaces/ipagination.option';
 import { FilterQuery, Model, PopulateOptions, ProjectionType } from 'mongoose';
 import { Pagination } from '../interfaces/pagination';
-import { type } from 'os';
 
 export const paginateModel = async <T>(
   model: Model<T>,

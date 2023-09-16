@@ -10,6 +10,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { IPaginationOptions } from '../core/interfaces/ipagination.option';
 import { Pagination } from '../core/interfaces/pagination';
 import { paginateModel } from '../core/utils/pagination-utils';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UserService {
@@ -18,13 +19,13 @@ export class UserService {
     private readonly userModel: Model<User>,
   ) {}
 
-  async create(user: User): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     try {
-      const createdUser = await this.userModel.create(user);
-      const { password, ...userExceptPass } = createdUser.toObject();
+      const createdUser = await this.userModel.create(createUserDto);
 
-      return userExceptPass;
+      return this.findOne(createdUser.id);
     } catch (err) {
+      console.log(err);
       if (err.code === 11000)
         throw new BadRequestException('Email already used');
       throw err;

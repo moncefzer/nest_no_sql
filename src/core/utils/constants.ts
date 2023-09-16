@@ -17,6 +17,7 @@ export enum SocketEvents {
   ON_CONVERSATION_JOIN = 'onConversationJoin',
   ON_CONVERSATION_LEAVE = 'onConversationLeave',
   ON_CONVERSATION_CREATE = 'onConversationCreate',
+  //? in the front push the message and update the conversation
   ON_MESSAGE_CREATE = 'onMessageCreate',
   ON_MESSAGE_DELETE = 'onMessageDelete',
 }

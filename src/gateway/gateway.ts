@@ -7,16 +7,18 @@ import {
   SubscribeMessage,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { AuthService } from 'src/auth/auth.service';
-import { UserService } from 'src/user/user.service';
+import { AuthService } from '../auth/auth.service';
+import { UserService } from '../user/user.service';
 import { ConnectedUserService, JoinedConversationService } from './services';
-import { ServerEvents, SocketEvents } from 'src/core/utils/constants';
+import { ServerEvents, SocketEvents } from '../core/utils/constants';
 import { JoinConversationDto } from './dto';
-import { User } from 'src/user/entities/user.entity';
 import { OnEvent } from '@nestjs/event-emitter';
-import { Conversation } from 'src/conversation/entities/conversation.entity';
-import { Message } from 'src/messages/entities/message.entity';
-import { DeleteMessageParams } from 'src/core/utils/types';
+import { Conversation } from '../conversation/entities/conversation.entity';
+import {
+  CreateMessageEventPayload,
+  DeleteMessageParams,
+} from '../core/utils/types';
+import { User } from 'src/user/entities/user.entity';
 
 @WebSocketGateway()
 export class Gateway
@@ -71,10 +73,10 @@ export class Gateway
   async onConversationJoin(socket: Socket, payload: JoinConversationDto) {
     const { conversationId } = payload;
     const user: User = socket.data.user;
-    const conversationJoin = await this.joinedConversationService.create({
+    await this.joinedConversationService.create({
       conversation: conversationId,
       socketId: socket.id,
-      user,
+      user: user.id,
     });
 
     socket.join(`conversation-${payload.conversationId}`);
@@ -90,8 +92,9 @@ export class Gateway
   async handleConversationCreateEvent(conversation: Conversation) {
     for (const participant of conversation.participants) {
       const connection = await this.connectedUserService.findByUser(
-        participant._id.toString(),
+        participant.id,
       );
+
       connection &&
         this.server
           .to(connection.socketId)
@@ -100,20 +103,17 @@ export class Gateway
   }
 
   @OnEvent(ServerEvents.MESSAGE_CREATE)
-  async handleMessageCreateEvent(payload: {
-    message: Message;
-    conversation: Conversation;
-  }) {
-    const { message, conversation } = payload;
+  async handleMessageCreateEvent(payload: CreateMessageEventPayload) {
+    const { conversation } = payload;
 
     for (const participant of conversation.participants) {
       const connection = await this.connectedUserService.findByUser(
-        participant._id.toString(),
+        participant.id,
       );
       connection &&
         this.server
           .to(connection.socketId)
-          .emit(SocketEvents.ON_MESSAGE_CREATE, message);
+          .emit(SocketEvents.ON_MESSAGE_CREATE, payload);
     }
   }
 

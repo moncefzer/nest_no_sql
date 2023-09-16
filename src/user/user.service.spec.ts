@@ -1,7 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
-import { Types } from 'mongoose';
 import { getModelToken } from '@nestjs/mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 
@@ -79,8 +78,8 @@ describe('User Test suite', () => {
   describe('findOne', () => {
     it('should find the user', async () => {
       // arrange
-      const user: User = {
-        _id: new Types.ObjectId('452145457824578451658495'),
+      const user: Partial<User> = {
+        id: '452145457824578451658495',
         username: 'moncef',
         email: 'moncef@gmail.com',
         password: '12345678',
@@ -89,7 +88,7 @@ describe('User Test suite', () => {
       mockUserModel.findById.mockResolvedValue(user);
 
       // act
-      const result = await userService.findOne(user._id.toString());
+      const result = await userService.findOne(user.id);
 
       // asert
       expect(result).toStrictEqual(user);

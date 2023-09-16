@@ -1,11 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import { Types, Document } from 'mongoose';
+import { Populated } from 'src/core/utils/types';
 import { User } from 'src/user/entities/user.entity';
 
 @Schema()
-export class Post {
-  _id?: Types.ObjectId;
-
+export class Post extends Document {
   @Prop()
   description: string;
 
@@ -14,7 +13,7 @@ export class Post {
   postImageUrl: string;
 
   @Prop({ type: Types.ObjectId, ref: User.name })
-  author: User;
+  author: Populated<User>;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

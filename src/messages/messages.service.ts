@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { IPaginationOptions } from 'src/core/interfaces/ipagination.option';
@@ -18,6 +18,7 @@ import { ConversationService } from 'src/conversation/conversation.service';
 export class MessagesService {
   constructor(
     @InjectModel(Message.name) private readonly messageModel: Model<Message>,
+    @Inject(forwardRef(() => ConversationService))
     private readonly conversatonsService: ConversationService,
   ) {}
 
@@ -26,19 +27,19 @@ export class MessagesService {
       params.conversationId,
     );
 
-    const createdmessage = await this.messageModel.create({
+    const createdMessage = await this.messageModel.create({
       content: params.content,
       conversation: params.conversationId,
       sender: params.user,
     });
 
     //todo : update lastSendMessage in the conversation
-    // const conversation = await this.conversatonsService.findOneById(
-    //   createdmessage.conversation,
-    // );
+    const conversation = await this.conversatonsService.updateLastMessageSent(
+      params.conversationId,
+      createdMessage,
+    );
 
-    // return { message: createdmessage, conversation };
-    return { message: createdmessage };
+    return { message: createdMessage, conversation };
   }
 
   async paginateMessagesForRoom(
@@ -73,7 +74,7 @@ export class MessagesService {
 
   async update(params: EditMessageParams) {
     const message = await this.messageModel.findOneAndUpdate(
-      { _id: params.messageId, sender: params.user._id },
+      { id: params.messageId, sender: params.user.id },
       {
         content: params.updatemessageDto,
       },

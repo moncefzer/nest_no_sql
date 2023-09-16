@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { IPaginationOptions } from 'src/core/interfaces/ipagination.option';
 import { Pagination } from 'src/core/interfaces/pagination';
 import { paginateModel } from 'src/core/utils/pagination-utils';
@@ -33,17 +33,18 @@ export class ConnectedUserService {
 
   async findOne(id: string) {
     try {
-      const post = await this.connectedUserModel.findById(id);
-      if (!post) throw new NotFoundException(`post with id ${id} not found`);
-      return post;
+      const connection = await this.connectedUserModel.findById(id);
+      if (!connection)
+        throw new NotFoundException(`connection with id ${id} not found`);
+      return connection;
     } catch (err) {
       throw new NotFoundException(`post with id ${id} not found`);
     }
   }
 
-  async findByUser(userId: string) {
+  async findByUser(userId: string): Promise<ConnectedUser> {
     const connection = await this.connectedUserModel.findOne({
-      user: userId,
+      user: new Types.ObjectId(userId),
     });
     return connection;
   }

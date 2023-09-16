@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthModule } from 'src/auth/auth.module';
-import { UserModule } from 'src/user/user.module';
+import { AuthModule } from '../auth/auth.module';
+import { UserModule } from '../user/user.module';
 import {
   ConnectedUser,
   ConnectedUserSchema,

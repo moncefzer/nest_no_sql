@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/user/entities/user.entity';
 import { JoinedConversation } from '../entities';
+import { CreateJoinConvParams } from 'src/core/utils/types';
 
 @Injectable()
 export class JoinedConversationService {
@@ -11,15 +12,15 @@ export class JoinedConversationService {
     private readonly joinedRoomModel: Model<JoinedConversation>,
   ) {}
 
-  async create(joinedRoom: JoinedConversation): Promise<JoinedConversation> {
-    const JoinedRoomExist = await this.joinedRoomModel.findOne({
-      socketId: joinedRoom.socketId,
-      conversation: joinedRoom.conversation,
+  async create(params: CreateJoinConvParams): Promise<JoinedConversation> {
+    const joinedRoomExist = await this.joinedRoomModel.findOne({
+      socketId: params.socketId,
+      conversation: params.conversation,
     });
 
-    if (JoinedRoomExist) return JoinedRoomExist;
+    if (joinedRoomExist) return joinedRoomExist;
 
-    return this.joinedRoomModel.create(joinedRoom);
+    return this.joinedRoomModel.create(params);
   }
 
   async findByUser(user: User): Promise<JoinedConversation[]> {

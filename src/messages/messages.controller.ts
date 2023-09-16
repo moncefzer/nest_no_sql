@@ -10,14 +10,17 @@ import {
 } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { CreateMessageDto } from './dto/create-message.dto';
-import { GetUser } from 'src/auth/decorator/user.decorator';
+import { GetUser } from '..//auth/decorator/user.decorator';
 import { EmptyMessageException } from './exceptions/empty-message.exception';
-import { User } from 'src/user/entities/user.entity';
+import { User } from '..//user/entities/user.entity';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { Routes, ServerEvents } from 'src/core/utils/constants';
-import { JwtGuard } from 'src/auth/guard/jwt.guard';
-import { DeleteMessageParams } from 'src/core/utils/types';
+import { Routes, ServerEvents } from '..//core/utils/constants';
+import { JwtGuard } from '..//auth/guard/jwt.guard';
+import {
+  CreateMessageEventPayload,
+  DeleteMessageParams,
+} from '..//core/utils/types';
 
 @Controller(Routes.MESSAGES)
 @UseGuards(JwtGuard)
@@ -37,7 +40,11 @@ export class MessagesController {
     if (!createMessageDto.content) throw new EmptyMessageException();
     const params = { user, conversationId, content: createMessageDto.content };
     const response = await this.messageService.create(params);
-    this.events.emit(ServerEvents.MESSAGE_CREATE, response);
+    this.events.emit(
+      ServerEvents.MESSAGE_CREATE,
+      <CreateMessageEventPayload>response,
+    );
+    console.log('message created');
     return;
   }
 
@@ -59,7 +66,7 @@ export class MessagesController {
     @Param('messageId') messageId: string,
   ) {
     const params: DeleteMessageParams = {
-      userId: user._id.toJSON(),
+      userId: user.id,
       conversationId,
       messageId,
     };

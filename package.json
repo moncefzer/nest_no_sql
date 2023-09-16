@@ -76,6 +76,15 @@
       "ts"
     ],
     "rootDir": "src",
+    "moduleNameMapper": {
+      "@auth": "<rootDir>/auth",
+      "@conversation": "<rootDir>/conversation",
+      "@core": "<rootDir>/core",
+      "@gateway": "<rootDir>/gateway",
+      "@messages": "<rootDir>/messages",
+      "@post": "<rootDir>/post",
+      "@user": "<rootDir>/user"
+    },
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"

@@ -1,11 +1,11 @@
 import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { User } from 'src/user/entities/user.entity';
-import { GetUser } from 'src/auth/decorator/user.decorator';
+import { User } from '../user/entities/user.entity';
+import { GetUser } from '../auth/decorator/user.decorator';
 import { ConversationService } from './conversation.service';
-import { Routes, ServerEvents } from 'src/core/utils/constants';
-import { JwtGuard } from 'src/auth/guard/jwt.guard';
+import { Routes, ServerEvents } from '../core/utils/constants';
+import { JwtGuard } from '../auth/guard/jwt.guard';
 
 @Controller(Routes.CONVERSATIONS)
 @UseGuards(JwtGuard)

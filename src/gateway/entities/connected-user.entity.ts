@@ -1,16 +1,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
+import { Populated } from 'src/core/utils/types';
 import { User } from 'src/user/entities/user.entity';
 
 @Schema({ timestamps: true })
-export class ConnectedUser {
-  id?: Types.ObjectId;
-
+export class ConnectedUser extends mongoose.Document {
   @Prop()
   socketId: string;
 
   @Prop({ type: Types.ObjectId, ref: User.name })
-  user: User;
+  user: Populated<User>;
 }
 
 export const ConnectedUserSchema = SchemaFactory.createForClass(ConnectedUser);

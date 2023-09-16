@@ -20,5 +20,13 @@
   },
   "watchOptions": {
     "watchFile": "fixedPollingInterval"
+  },
+  "paths": {
+    "@core/*": ["src/core/*"],
+    "@core": ["src/core"],
+    "@auth/*": ["src/auth/*"],
+    "@auth": ["src/auth"],
+    "@user/*": ["src/usre/*"],
+    "@user": ["src/usre"]
   }
 }

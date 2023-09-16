@@ -1,6 +1,8 @@
-import { UpdateMessageDto } from 'src/messages/dto/update-message.dto';
-import { User } from 'src/user/entities/user.entity';
+import { Message } from 'src/messages/entities/message.entity';
+import { UpdateMessageDto } from '../../messages/dto/update-message.dto';
+import { User } from '../../user/entities/user.entity';
 import { ObjectId, Document, PopulatedDoc } from 'mongoose';
+import { Conversation } from 'src/conversation/entities/conversation.entity';
 
 export type EditMessageParams = {
   user: User;
@@ -19,4 +21,17 @@ export type DeleteMessageParams = {
   messageId: string;
 };
 
-export type Populated<T> = PopulatedDoc<Document<ObjectId> & T>;
+export type CreateJoinConvParams = {
+  socketId: string;
+  conversation: string;
+  user: string;
+};
+
+export type CreateMessageEventPayload = {
+  message: Message;
+  conversation: Conversation;
+};
+
+export type Populated<T extends Document> = PopulatedDoc<
+  Document<ObjectId> & T
+>;
