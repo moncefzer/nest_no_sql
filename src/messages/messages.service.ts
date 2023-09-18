@@ -72,7 +72,7 @@ export class MessagesService {
     }
   }
 
-  async update(params: EditMessageParams) {
+  async update(params: EditMessageParams): Promise<Message> {
     const message = await this.messageModel.findOneAndUpdate(
       { id: params.messageId, sender: params.user.id },
       {
@@ -84,6 +84,8 @@ export class MessagesService {
     );
 
     if (!message) throw new CannotEditMessageException();
+
+    return message;
   }
 
   async delete(params: DeleteMessageParams) {

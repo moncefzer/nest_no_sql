@@ -45,10 +45,22 @@ export class ConversationService {
 
   async findConversationForUser(user: User): Promise<Conversation[]> {
     const conversations = await this.conversationModel
-      .find({
-        participants: { $in: [user.id] },
-      })
-      .populate('participants');
+      .find(
+        {
+          participants: { $in: [user.id] },
+        },
+        null,
+        { sort: { updatedAt: -1 } },
+      )
+      .populate([
+        {
+          path: 'participants',
+        },
+        {
+          path: 'lastMessageSent',
+          populate: 'sender',
+        },
+      ]);
 
     return conversations;
   }
@@ -84,7 +96,10 @@ export class ConversationService {
     try {
       const room = await this.conversationModel
         .findById(id)
-        .populate('participants');
+        .populate([
+          { path: 'participants' },
+          { path: 'lastMessageSent', populate: 'sender' },
+        ]);
 
       if (!room) throw new ConversationNotFoundException();
       return room;
